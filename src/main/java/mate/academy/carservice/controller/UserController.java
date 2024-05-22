@@ -2,7 +2,7 @@ package mate.academy.carservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import jakarta.validation.*;
 import lombok.RequiredArgsConstructor;
 import mate.academy.carservice.auth.dto.GetProfileInfoDto;
 import mate.academy.carservice.auth.dto.UpdateRoleRequestDto;
@@ -13,15 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User management", description = "Endpoints for managing users")
 @RestController
@@ -43,8 +35,7 @@ public class UserController {
     @Operation(summary = "Updating user's information",
             description = "Endpoint for updating user's information ")
     @PutMapping("/me")
-    public GetProfileInfoDto updateUserInfo(Authentication authentication,
-                                            @RequestBody UserRegisterRequestDto requestDto) {
+    public GetProfileInfoDto UpdateUserInfo(Authentication authentication, @RequestBody UserRegisterRequestDto requestDto) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
         User user = (User) userDetails;
         return userService.updateUserInfo(user.getEmail(), requestDto);
@@ -53,8 +44,7 @@ public class UserController {
     @Operation(summary = "Updating user's role",
             description = "Endpoint for updating user's role")
     @PatchMapping("/{id}/role")
-    public void updateUserRole(@PathVariable Long id,
-                               @RequestBody @Valid UpdateRoleRequestDto requestDto) {
+    public void updateUserRole(@PathVariable Long id, @RequestBody @Valid UpdateRoleRequestDto requestDto) {
         userService.updateRole(id, requestDto);
     }
 
@@ -65,4 +55,5 @@ public class UserController {
     public void deleteUser(@PathVariable Long userId) {
         userService.deleteUserById(userId);
     }
+
 }
