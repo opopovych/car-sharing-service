@@ -1,6 +1,7 @@
 package mate.academy.carservice.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.carservice.auth.dto.GetProfileInfoDto;
 import mate.academy.carservice.auth.dto.UpdateRoleRequestDto;
@@ -17,8 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -28,14 +27,17 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserRegisterResponseDto register(UserRegisterRequestDto requestDto) throws RegistrationException {
-        if (requestDto == null || requestDto.getEmail() == null || requestDto.getPassword() == null) {
+    public UserRegisterResponseDto register(UserRegisterRequestDto requestDto)
+            throws RegistrationException {
+        if (requestDto == null || requestDto.getEmail() == null
+                || requestDto.getPassword() == null) {
             throw new IllegalArgumentException("Request data must not be null");
         }
 
         Optional<User> existingUser = userRepository.findByEmail(requestDto.getEmail());
         if (existingUser.isPresent()) {
-            throw new RegistrationException("User with email " + requestDto.getEmail() + " already exists");
+            throw new RegistrationException("User with email " + requestDto.getEmail()
+                    + " already exists");
         }
 
         User user = new User();
@@ -85,10 +87,12 @@ public class UserServiceImpl implements UserService {
         checkManagerId(userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " was not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId
+                        + " was not found"));
 
         Role role = roleRepository.findById(requestDto.getRoleId())
-                .orElseThrow(() -> new EntityNotFoundException("Role with id " + requestDto.getRoleId() + " was not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Role with id "
+                        + requestDto.getRoleId() + " was not found"));
 
         user.getRoles().clear();
         user.getRoles().add(role);
@@ -107,12 +111,14 @@ public class UserServiceImpl implements UserService {
 
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User with email " + email + " was not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User with email "
+                        + email + " was not found"));
     }
 
     private void checkManagerId(Long userId) {
         if (userId == 1) {
-            throw new RuntimeException("Manager with id 1 cannot perform any updates on themselves");
+            throw new RuntimeException("Manager with id 1 cannot perform any"
+                    + " updates on themselves");
         }
     }
 }
