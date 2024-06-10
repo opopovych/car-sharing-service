@@ -10,6 +10,7 @@ import mate.academy.carservice.auth.dto.UserRegisterRequestDto;
 import mate.academy.carservice.model.User;
 import mate.academy.carservice.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,7 +32,9 @@ public class UserController {
     private final UserService userService;
     private final UserDetailsService userDetailsService;
 
+    @Tag(name = "User management", description = "Endpoints for managing users")
     @GetMapping("/me")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @Operation(summary = "User's information",
             description = "Endpoint for getting information about user")
     public GetProfileInfoDto getUserInfo(Authentication authentication) {
@@ -40,9 +43,10 @@ public class UserController {
         return userService.getUserInfo(user.getEmail());
     }
 
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
     @Operation(summary = "Updating user's information",
             description = "Endpoint for updating user's information ")
-    @PutMapping("/me")
     public GetProfileInfoDto updateUserInfo(Authentication authentication,
                                             @RequestBody UserRegisterRequestDto requestDto) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
@@ -50,15 +54,17 @@ public class UserController {
         return userService.updateUserInfo(user.getEmail(), requestDto);
     }
 
+    @PatchMapping("/{id}/role")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Updating user's role",
             description = "Endpoint for updating user's role")
-    @PatchMapping("/{id}/role")
     public void updateUserRole(@PathVariable Long id,
                                @RequestBody @Valid UpdateRoleRequestDto requestDto) {
         userService.updateRole(id, requestDto);
     }
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Deleting an user by id",
             description = "Endpoint for deleting an user by id")
     @ResponseStatus(HttpStatus.NO_CONTENT)

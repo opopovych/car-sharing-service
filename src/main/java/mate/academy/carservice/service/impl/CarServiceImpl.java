@@ -3,8 +3,8 @@ package mate.academy.carservice.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.carservice.dto.car.CarDto;
-import mate.academy.carservice.dto.car.CreateCarDto;
+import mate.academy.carservice.dto.car.CarDtoResponse;
+import mate.academy.carservice.dto.car.CarDtoRequest;
 import mate.academy.carservice.dto.car.UpdateCarInfoRequestDto;
 import mate.academy.carservice.mapper.CarMapper;
 import mate.academy.carservice.model.Car;
@@ -19,16 +19,16 @@ public class CarServiceImpl implements CarService {
     private final CarMapper carMapper;
 
     @Override
-    public CarDto createCar(CreateCarDto carDto) {
+    public CarDtoResponse createCar(CarDtoRequest carDto) {
         Car car = carMapper.createCarDtoToCar(carDto);
         Car savedCar = carRepository.save(car);
         return carMapper.entityToCarDto(savedCar);
     }
 
     @Override
-    public List<CarDto> getAllCars() {
+    public List<CarDtoResponse> getAllCars() {
         List<Car> cars = carRepository.findAll();
-        List<CarDto> carDtos = cars.stream()
+        List<CarDtoResponse> carDtos = cars.stream()
                 .map(carMapper::entityToCarDto)
                 .toList();
         return carDtos;
@@ -40,7 +40,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public CarDto updateCarInfo(Long id, UpdateCarInfoRequestDto requestDto) {
+    public CarDtoResponse updateCarInfo(Long id, UpdateCarInfoRequestDto requestDto) {
         Car car = findById(id);
         Car updatedCar = carMapper.updateCarInfo(car,requestDto);
         Car savedCar = carRepository.save(updatedCar);

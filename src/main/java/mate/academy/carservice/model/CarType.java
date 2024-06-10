@@ -1,5 +1,5 @@
 package mate.academy.carservice.model;
 
-public enum Type {
+public enum CarType {
     SEDAN, SUV, HATCHBACK, UNIVERSAL;
 }

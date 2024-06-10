@@ -32,7 +32,7 @@ public class Role implements GrantedAuthority {
     }
 
     public enum RoleName {
-        ROLE_MANAGER,
-        ROLE_CUSTOMER
+        MANAGER,
+        CUSTOMER
     }
 }

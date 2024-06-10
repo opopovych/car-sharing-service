@@ -29,13 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRegisterResponseDto register(UserRegisterRequestDto requestDto)
             throws RegistrationException {
-        if (requestDto == null || requestDto.getEmail() == null
-                || requestDto.getPassword() == null) {
-            throw new IllegalArgumentException("Request data must not be null");
-        }
-
-        Optional<User> existingUser = userRepository.findByEmail(requestDto.getEmail());
-        if (existingUser.isPresent()) {
+        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
             throw new RegistrationException("User with email " + requestDto.getEmail()
                     + " already exists");
         }
@@ -45,10 +39,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         user.setFirstName(requestDto.getFirstName());
         user.setLastName(requestDto.getLastName());
-
-        Role managerRole = roleRepository.findByRoleName(Role.RoleName.ROLE_MANAGER)
-                .orElseThrow(() -> new EntityNotFoundException("Manager role not found"));
-        user.getRoles().add(managerRole);
+        user.getRoles().add(roleRepository.findByRoleName(Role.RoleName.CUSTOMER));
 
         User savedUser = userRepository.save(user);
         return userMapper.entityToRegisterResponseDto(savedUser);
@@ -117,8 +108,7 @@ public class UserServiceImpl implements UserService {
 
     private void checkManagerId(Long userId) {
         if (userId == 1) {
-            throw new RuntimeException("Manager with id 1 cannot perform any"
-                    + " updates on themselves");
+            throw new RuntimeException("Manager with id 1 can not do any updates with yourself");
         }
     }
 }

@@ -1,8 +1,8 @@
 package mate.academy.carservice.mapper;
 
 import mate.academy.carservice.config.MapperConfig;
-import mate.academy.carservice.dto.car.CarDto;
-import mate.academy.carservice.dto.car.CreateCarDto;
+import mate.academy.carservice.dto.car.CarDtoResponse;
+import mate.academy.carservice.dto.car.CarDtoRequest;
 import mate.academy.carservice.dto.car.UpdateCarInfoRequestDto;
 import mate.academy.carservice.model.Car;
 import org.mapstruct.Mapper;
@@ -12,9 +12,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(config = MapperConfig.class)
 public interface CarMapper {
-    CarDto entityToCarDto(Car car);
+    CarDtoResponse entityToCarDto(Car car);
 
-    Car createCarDtoToCar(CreateCarDto createCarDto);
+    Car createCarDtoToCar(CarDtoRequest createCarDto);
 
     @Mapping(target = "type", ignore = true)
     @Mapping(target = "brand",
