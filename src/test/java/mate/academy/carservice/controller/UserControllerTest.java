@@ -11,12 +11,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import mate.academy.carservice.auth.dto.GetProfileInfoDto;
 import mate.academy.carservice.auth.dto.UpdateRoleRequestDto;
 import mate.academy.carservice.auth.dto.UserRegisterRequestDto;
+import mate.academy.carservice.config.SecurityConfig;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -29,6 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:database/users/delete-users-from-the-users-table.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Import(SecurityConfig.class)
 public class UserControllerTest {
     protected static MockMvc mockMvc;
     @Autowired
@@ -45,19 +49,15 @@ public class UserControllerTest {
     }
     @Test
     @DisplayName("Get user info")
-    @WithUserDetails("user@example.com")
-    @Sql(scripts = {"classpath:database/roles/add-roles.sql","classpath:database/users/add-users-to-the-users-table.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/users/delete-users-from-the-users-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @WithMockUser(roles = "CUSTOMER")
+    //@WithMockUser(username = "customer@gmail.com", authorities = "CUSTOMER")
+    @WithUserDetails("customer@gmail.com")
     public void getUserInfo_ValidRequest_Success() throws Exception {
         //given
         GetProfileInfoDto expectedResponseDto = new GetProfileInfoDto()
-                .setId(1L)
-                .setEmail("user@example.com")
-                .setFirstName("John")
-                .setLastName("Doe");
+                .setId(2L)
+                .setEmail("customer@gmail.com")
+                .setFirstName("Oleh")
+                .setLastName("Popovich");
         //when
         MvcResult mvcResult = mockMvc.perform(get("/users/me")
                         .contentType(MediaType.APPLICATION_JSON))

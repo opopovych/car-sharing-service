@@ -22,7 +22,8 @@ public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "varchar(255)", unique = true, nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, unique = true, columnDefinition = "VARCHAR(255)")
     private RoleName roleName;
 
     @Override
