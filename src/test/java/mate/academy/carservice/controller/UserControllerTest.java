@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -42,13 +43,14 @@ public class UserControllerTest {
                 .apply(springSecurity())
                 .build();
     }
-    @WithMockUser(roles = "CUSTOMER")
     @Test
     @DisplayName("Get user info")
-    @Sql(scripts = {"classpath:database/users/add-users-to-the-users-table.sql"},
+    @WithUserDetails("user@example.com")
+    @Sql(scripts = {"classpath:database/roles/add-roles.sql","classpath:database/users/add-users-to-the-users-table.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "classpath:database/users/delete-users-from-the-users-table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithMockUser(roles = "CUSTOMER")
     public void getUserInfo_ValidRequest_Success() throws Exception {
         //given
         GetProfileInfoDto expectedResponseDto = new GetProfileInfoDto()
@@ -57,7 +59,8 @@ public class UserControllerTest {
                 .setFirstName("John")
                 .setLastName("Doe");
         //when
-        MvcResult mvcResult = mockMvc.perform(get("/users/me"))
+        MvcResult mvcResult = mockMvc.perform(get("/users/me")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 

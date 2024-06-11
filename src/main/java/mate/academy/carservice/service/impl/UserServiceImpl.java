@@ -1,7 +1,6 @@
 package mate.academy.carservice.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.carservice.auth.dto.GetProfileInfoDto;
 import mate.academy.carservice.auth.dto.UpdateRoleRequestDto;
