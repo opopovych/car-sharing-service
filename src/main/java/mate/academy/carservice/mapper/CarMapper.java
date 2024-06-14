@@ -1,8 +1,8 @@
 package mate.academy.carservice.mapper;
 
 import mate.academy.carservice.config.MapperConfig;
-import mate.academy.carservice.dto.car.CarDtoResponse;
 import mate.academy.carservice.dto.car.CarDtoRequest;
+import mate.academy.carservice.dto.car.CarDtoResponse;
 import mate.academy.carservice.dto.car.UpdateCarInfoRequestDto;
 import mate.academy.carservice.model.Car;
 import org.mapstruct.Mapper;

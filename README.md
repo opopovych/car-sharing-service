@@ -24,9 +24,6 @@ This is the back-end part of the application, developed in Java.
 - Telegram bot (telegrambots - version 6.8.0)
 - Stripe payment service (stripe-java - version 20.97.0)
 
-### ARCHITECTURE
-
-![architecture.png](architecture.png)
 
 ### **GENERAL INFO**
 **In this app, we have the following domain models (entities):**

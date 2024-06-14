@@ -26,21 +26,22 @@ public class PaymentServiceTest {
     private PaymentServiceImpl paymentService;
 
     @Test
-    void getPaymentsByUserId_haveOnePayment_returnPaymentListSizeAsOne() throws MalformedURLException {
+    void getPaymentsByUserId_haveOnePayment_returnPaymentListSizeAsOne()
+            throws MalformedURLException {
         Long userId = 1L;
         Payment payment = createPaymentTest();
         Mockito.when(paymentRepository.findByUserId(userId)).thenReturn(List.of(payment));
         List<Payment> actual = paymentService.getPaymentsByUserId(userId);
         Assertions.assertEquals(actual.size(), 1);
     }
+
     @Test
     void createPaymentSession_oneSession_returnSavedSession() throws MalformedURLException {
         Payment payment = createPaymentTest();
         Mockito.when(paymentRepository.save(payment)).thenReturn(payment);
         Payment actual = paymentService.createPaymentSession(payment);
-        Assertions.assertEquals(actual,payment);
+        Assertions.assertEquals(actual, payment);
     }
-
 
     private Payment createPaymentTest() throws MalformedURLException {
         Payment payment = new Payment()

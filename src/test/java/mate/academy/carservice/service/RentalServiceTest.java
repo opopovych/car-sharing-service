@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;

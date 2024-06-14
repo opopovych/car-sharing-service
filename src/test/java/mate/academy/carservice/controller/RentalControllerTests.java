@@ -8,24 +8,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-import javax.sql.DataSource;
-import lombok.SneakyThrows;
 import mate.academy.carservice.dto.car.RentedCarDto;
 import mate.academy.carservice.dto.rental.CreateRentalRequestDto;
 import mate.academy.carservice.dto.rental.RentalDto;
-import mate.academy.carservice.model.Car;
 import mate.academy.carservice.model.CarType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,7 +39,8 @@ import org.springframework.web.context.WebApplicationContext;
         "classpath:database/rentals/add-rentals-to-the-rentals-table.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @Sql(scripts = {"classpath:database/rentals/delete-rentals-from-the-rentals-table.sql",
-        "classpath:database/cars/delete-cars-from-the-cars-table.sql",},
+        "classpath:database/cars/delete-cars-from-the-cars-table.sql",
+        "classpath:database/users/delete-users-from-the-users-table.sql",},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 public class RentalControllerTests {
     protected static MockMvc mockMvc;
@@ -58,12 +56,12 @@ public class RentalControllerTests {
                 .build();
     }
 
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(username = "customer@gmail.com", roles = {"CUSTOMER", "MANAGER"})
     @Test
     @DisplayName("Get rentals by user id")
     public void getRentalsByUserId_ValidRequest_Success() throws Exception {
         //given
-        int userId = 1;
+        int userId = 4;
 
         RentalDto rentalDto2 = new RentalDto()
                 .setId(1L)
@@ -83,14 +81,14 @@ public class RentalControllerTests {
 
         //when
         MvcResult mvcResult1 = mockMvc.perform(get("/rentals")
-                        .param("userId", "1")
+                        .param("userId", "4")
                         .param("isActive", "false")
                 )
                 .andExpect(status().isOk())
                 .andReturn();
 
         MvcResult mvcResult2 = mockMvc.perform(get("/rentals")
-                        .param("userId", "1")
+                        .param("userId", "4")
                         .param("isActive", "true")
                 )
                 .andExpect(status().isOk())
@@ -117,6 +115,7 @@ public class RentalControllerTests {
                 "rentedCarDto");
     }
 
+    @WithMockUser(username = "manager@gmail.com", roles = {"CUSTOMER", "MANAGER"})
     @Test
     @DisplayName("Get a rental by id")
     public void getRentalById_ValidRequest_Success() throws Exception {
@@ -129,7 +128,7 @@ public class RentalControllerTests {
                 .setReturnDate(LocalDate.of(2024, 2, 2))
                 .setActualReturnDate(null)
                 .setRentedCarDto(new RentedCarDto().setId(1L))
-                .setUserId(1L);
+                .setUserId(5L);
 
         //when
         MvcResult mvcResult = mockMvc.perform(get("/rentals/{rentalId}", rentalId))
@@ -146,7 +145,8 @@ public class RentalControllerTests {
         EqualsBuilder.reflectionEquals(expectedRentalDto, actualRentalDto,
                 "rentedCarDto");
     }
-    @WithMockUser(roles = "MANAGER")
+
+    @WithMockUser(username = "customer@gmail.com", roles = "CUSTOMER")
     @Test
     @DisplayName("Create a new rental")
     public void createRental_ValidRequest_Success() throws Exception {
@@ -187,11 +187,12 @@ public class RentalControllerTests {
                 "id", "userId");
     }
 
+    @WithMockUser(username = "customer@gmail.com", roles = "CUSTOMER")
     @Test
     @DisplayName("Set an actual return date for a rental")
     public void setActualReturnDate_ValidRequest_Success() throws Exception {
         //given
-        int rentalId = 2;
+        int rentalId = 3;
 
         //when
         MvcResult mvcResult = mockMvc.perform(post("/rentals/{rentalId}/return", rentalId))

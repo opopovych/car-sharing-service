@@ -3,27 +3,25 @@ package mate.academy.carservice.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import javax.sql.DataSource;
-import lombok.SneakyThrows;
 import mate.academy.carservice.dto.car.CarDtoRequest;
 import mate.academy.carservice.dto.car.CarDtoResponse;
 import mate.academy.carservice.dto.car.UpdateCarInfoRequestDto;
 import mate.academy.carservice.model.Car;
 import mate.academy.carservice.model.CarType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,8 +30,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CarControllerTest {
@@ -43,7 +39,7 @@ public class CarControllerTest {
 
     @BeforeAll
     static void beforeAll(
-                          @Autowired WebApplicationContext applicationContext
+            @Autowired WebApplicationContext applicationContext
     ) throws SQLException {
         mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
                 .apply(springSecurity())
@@ -88,7 +84,7 @@ public class CarControllerTest {
         CarDtoRequest carDtoRequest1 = createSecondTestCarDtoRequest();
         List<CarDtoRequest> cars = List.of(carDtoRequest, carDtoRequest1);
 
-        MvcResult result = mockMvc.perform(get("/cars")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/cars")
                 )
                 .andExpect(status().isOk())
                 .andReturn();
@@ -108,10 +104,10 @@ public class CarControllerTest {
     @Sql(scripts = "classpath:database/cars/delete-cars-from-the-cars-table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void getCarById_validRequest_success() throws Exception {
-        long id = 1l;
+        long id = 1L;
         CarDtoRequest carDtoRequest = createTestCarDtoRequest();
 
-        MvcResult result = mockMvc.perform(get("/cars/1")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/cars/1")
                 )
                 .andExpect(status().isOk())
                 .andReturn();
@@ -149,7 +145,7 @@ public class CarControllerTest {
         String jsonContent = objectMapper.writeValueAsString(updateCarInfoRequestDto);
 
         //when
-        MvcResult mvcResult = mockMvc.perform(put("/cars/{carId}", carId)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/cars/{carId}", carId)
                         .content(jsonContent)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -176,7 +172,7 @@ public class CarControllerTest {
         long carId = 1L;
 
         //when
-        MvcResult mvcResult = mockMvc.perform(delete("/cars/{carId}", carId))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/cars/{carId}", carId))
                 .andExpect(status().isNoContent())
                 .andReturn();
     }

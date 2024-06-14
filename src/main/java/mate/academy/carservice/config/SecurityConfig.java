@@ -3,7 +3,6 @@ package mate.academy.carservice.config;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import lombok.RequiredArgsConstructor;
-import mate.academy.carservice.security.CustomUserDetailsService;
 import mate.academy.carservice.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

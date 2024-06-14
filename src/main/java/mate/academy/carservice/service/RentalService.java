@@ -1,8 +1,8 @@
 package mate.academy.carservice.service;
 
 import java.util.List;
-import mate.academy.carservice.dto.rental.RentalDto;
 import mate.academy.carservice.dto.rental.CreateRentalRequestDto;
+import mate.academy.carservice.dto.rental.RentalDto;
 import mate.academy.carservice.dto.rental.RentalDtoWithoutCarInfo;
 import mate.academy.carservice.model.User;
 

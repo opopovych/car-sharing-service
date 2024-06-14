@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.carservice.dto.car.CarDtoResponse;
 import mate.academy.carservice.dto.car.CarDtoRequest;
+import mate.academy.carservice.dto.car.CarDtoResponse;
 import mate.academy.carservice.dto.car.UpdateCarInfoRequestDto;
 import mate.academy.carservice.model.Car;
 import mate.academy.carservice.service.CarService;
@@ -55,7 +55,8 @@ public class CarController {
     @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Update car info by id",
             description = "Update car info by id")
-    CarDtoResponse updateCarInfo(@PathVariable Long id, @RequestBody UpdateCarInfoRequestDto requestDto) {
+    CarDtoResponse updateCarInfo(@PathVariable Long id,
+                                 @RequestBody UpdateCarInfoRequestDto requestDto) {
         return carService.updateCarInfo(id, requestDto);
     }
 

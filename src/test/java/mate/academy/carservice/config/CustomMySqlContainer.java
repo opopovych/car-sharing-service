@@ -1,6 +1,5 @@
 package mate.academy.carservice.config;
 
-
 import org.testcontainers.containers.MySQLContainer;
 
 public class CustomMySqlContainer extends MySQLContainer<CustomMySqlContainer> {

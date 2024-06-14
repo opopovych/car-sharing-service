@@ -5,8 +5,8 @@ import static org.mockito.Mockito.times;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import mate.academy.carservice.dto.car.CarDtoResponse;
 import mate.academy.carservice.dto.car.CarDtoRequest;
+import mate.academy.carservice.dto.car.CarDtoResponse;
 import mate.academy.carservice.dto.car.UpdateCarInfoRequestDto;
 import mate.academy.carservice.mapper.CarMapper;
 import mate.academy.carservice.model.Car;
@@ -81,7 +81,6 @@ public class CarServiceTest {
         CarDtoResponse carDtoResponse = createTestCarDtoResponse(car);
 
         UpdateCarInfoRequestDto updatedRequest = createTestUpdateCar();
-
 
         Mockito.when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
         Mockito.when(carMapper.updateCarInfo(car, updatedRequest)).thenReturn(car);

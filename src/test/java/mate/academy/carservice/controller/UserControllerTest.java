@@ -11,18 +11,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import mate.academy.carservice.auth.dto.GetProfileInfoDto;
 import mate.academy.carservice.auth.dto.UpdateRoleRequestDto;
 import mate.academy.carservice.auth.dto.UserRegisterRequestDto;
-import mate.academy.carservice.config.SecurityConfig;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:database/users/delete-users-from-the-users-table.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@Import(SecurityConfig.class)
 public class UserControllerTest {
     protected static MockMvc mockMvc;
     @Autowired
@@ -47,14 +42,18 @@ public class UserControllerTest {
                 .apply(springSecurity())
                 .build();
     }
+
     @Test
     @DisplayName("Get user info")
-    //@WithMockUser(username = "customer@gmail.com", authorities = "CUSTOMER")
-    @WithUserDetails("customer@gmail.com")
+    @WithMockUser(username = "customer@gmail.com", authorities = "CUSTOMER")
+    @Sql(scripts = "classpath:database/users/add-users-to-the-users-table.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/users/delete-users-from-the-users-table.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void getUserInfo_ValidRequest_Success() throws Exception {
         //given
         GetProfileInfoDto expectedResponseDto = new GetProfileInfoDto()
-                .setId(2L)
+                .setId(1L)
                 .setEmail("customer@gmail.com")
                 .setFirstName("Oleh")
                 .setLastName("Popovich");
@@ -73,7 +72,7 @@ public class UserControllerTest {
                 "id","roles");
     }
 
-    @WithMockUser(username = "user@example.com", roles = "CUSTOMER")
+    @WithMockUser(username = "customer@gmail.com", roles = "CUSTOMER")
     @Test
     @DisplayName("Update user info")
     @Sql(scripts = "classpath:database/users/add-users-to-the-users-table.sql",
@@ -83,12 +82,14 @@ public class UserControllerTest {
     public void updateUserInfo_ValidRequest_Success() throws Exception {
         //given
         UserRegisterRequestDto updateUserInfoRequestDto = new UserRegisterRequestDto()
+                .setEmail("newCustomer@gmail.com")
                 .setFirstName("NewFirstName")
-                .setLastName("NewLastName");
+                .setLastName("NewLastName")
+                .setPassword("newPass");
 
         GetProfileInfoDto expectedResponseDto = new GetProfileInfoDto()
                 .setId(1L)
-                .setEmail("user@example.com")
+                .setEmail(updateUserInfoRequestDto.getEmail())
                 .setFirstName(updateUserInfoRequestDto.getFirstName())
                 .setLastName(updateUserInfoRequestDto.getLastName());
 
@@ -111,7 +112,7 @@ public class UserControllerTest {
                 "id", "roles");
     }
 
-    @WithMockUser(username = "admin@example.com", roles = "MANAGER")
+    @WithMockUser(username = "manager@gmail.com ", roles = "MANAGER")
     @Test
     @DisplayName("Update user role")
     @Sql(scripts = "classpath:database/users/add-users-to-the-users-table.sql",
@@ -120,7 +121,7 @@ public class UserControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void updateRole_ValidRequest_Success() throws Exception {
         //given
-        long userId = 2L;
+        long userId = 5L;
         UpdateRoleRequestDto updateRoleRequestDto = new UpdateRoleRequestDto()
                 .setRoleId(1L);
 
@@ -135,7 +136,7 @@ public class UserControllerTest {
                 .andReturn();
     }
 
-    @WithMockUser(roles = "MANAGER")
+    @WithMockUser(username = "manager@gmail.com", roles = "MANAGER")
     @Test
     @DisplayName("Delete user")
     @Sql(scripts = "classpath:database/users/add-users-to-the-users-table.sql",
@@ -144,7 +145,7 @@ public class UserControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void deleteUser_ValidRequest_Success() throws Exception {
         //given
-        long userId = 2L;
+        long userId = 5L;
 
         //when
         MvcResult mvcResult = mockMvc.perform(delete("/users/{userId}", userId))
